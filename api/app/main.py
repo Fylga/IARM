@@ -1,5 +1,5 @@
+from .core.database import engine
 from fastapi import FastAPI
-from core.database import engine
 from models.models import Base
 from api.v1.endpoints.users import router as user_router
 

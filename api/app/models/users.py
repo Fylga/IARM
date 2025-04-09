@@ -1,4 +1,4 @@
-from models.models import Base
+from .models.models import Base
 from sqlalchemy import Column, Integer, Boolean, String, DateTime, func
 
 class User(Base):
