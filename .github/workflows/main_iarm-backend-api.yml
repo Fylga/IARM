@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - deployment-prod-test
   workflow_dispatch:
 
 jobs:
