@@ -17,7 +17,7 @@ db_port = os.getenv("DB_PORT")
 
 sql_url = 'postgresql://{}:{}@{}:{}/{}?sslmode={}'.format(db_user, db_password, db_host, db_port, db_name, "require")
 
-engine = create_async_engine(sql_url, echo=True)
+engine = create_engine(sql_url, echo=True)
 SessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
 async def get_db():
