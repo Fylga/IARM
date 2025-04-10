@@ -41,34 +41,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 'latest'
-      
-      - name: Install Electron dependencies
-        run: |
-          cd electron-app
-          npm install
 
-      - name: Build Electron App
-        run: |
-          cd electron-app
-          npm run build:win
-
-      - name: Create artifacts directory
-        run: |
-          mkdir -p dist/artifacts
-          cp electron-app/dist/*.exe ./dist/artifacts
-
-      - name: Zip FastAPI app
-        run: zip -r dist/artifacts/iarm-backend-api.zip ./fastapi-app
-
-      - name: Zip Electron app
-        run: zip -r dist/artifacts/iarm-electron-app.zip ./electron-app
+      - name: Zip Backend app
+        run: zip -r fastapi-app.zip ./fastapi-app
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: iarm-artifacts
           path: |
-            ./dist/artifacts/
+            fastapi-app.zip
             !venv/
 
   deploy_backend:
@@ -85,7 +67,7 @@ jobs:
           name: iarm-artifacts
 
       - name: Unzip artifact for deployment
-        run: unzip iarm-backend-api.zip
+        run: unzip fastapi-app.zip
 
       
       - name: 'Deploy to Azure Web App'
@@ -95,3 +77,32 @@ jobs:
           app-name: 'iarm-backend-api'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F1CDCBE8F1B74160BF1F8F1AD7FEAE8B }}
+
+  build_windows_electron-app:
+    runs-on: windows-latest
+    needs: build_backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'latest'
+
+      - name: Install dependencies
+        run: |
+          cd electron-app
+          npm install
+
+      - name: Build Electron App for Windows
+        run: |
+          cd electron-app
+          npm run build:win
+
+      - name: Upload Windows Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-windows
+          path: electron-app/dist/*.exe
