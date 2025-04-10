@@ -43,7 +43,7 @@ jobs:
           node-version: 'latest'
 
       - name: Zip Backend app
-        run: zip -r fastapi-app.zip ./fastapi-app
+        run: zip -r fastapi-app.zip ./fastapi-app ./requirements.txt ./startup.sh ./.gitignore ./.github
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
