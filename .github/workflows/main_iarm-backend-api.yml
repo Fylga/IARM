@@ -7,7 +7,6 @@ name: Build and deploy Python app to Azure Web App - iarm-backend-api
 on:
   push:
     branches:
-      - main
       - deployment-prod-test
   workflow_dispatch:
 
