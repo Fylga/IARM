@@ -4,6 +4,7 @@ import os
 import logging
 
 logger = logging.getLogger(__name__)
+config = {}
 
 # Attempting to retrieve Azure environment variables
 def get_db_config() -> dict[str, str]:
