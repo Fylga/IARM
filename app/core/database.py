@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Attempting to retrieve Azure environment variables
-def get_db_config() -> Dict[str, str]:
+def get_db_config() -> dict[str, str]:
     logger.info("Retrieving database connection parameters")
 
     required_params = {
