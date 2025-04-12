@@ -33,10 +33,10 @@ def transcribe_audio(file_path):
 
     print("🎙️ Transcription de l'audio...")
     result = recognizer.recognize_once()
-    if result.reason == speechsdk.ResultReason.RecognizedSpeech:
-        print("✅ Transcription : ", result.text)
-    else:
+
+    if result.reason != speechsdk.ResultReason.RecognizedSpeech:
         print("❌ Erreur : ", result.reason)
+
     if result.reason == speechsdk.ResultReason.Canceled:
         cancellation_details = result.cancellation_details
         print("🔍 Détails de l'erreur : ", cancellation_details.error_details)
