@@ -10,8 +10,8 @@ class UserCreated(BaseModel):
     id: int
     name: str
     email: EmailStr    
-    is_actibe: bool
-    created_a: datetime
+    is_active: bool
+    created_at: datetime
 
 class UserLogin(BaseModel):
     email: EmailStr
