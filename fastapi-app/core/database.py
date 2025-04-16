@@ -28,13 +28,16 @@ def get_db_config() -> dict[str, str]:
     config = {}
     missing_params = []
 
-    for secret_name, param_name in required_params.items():
+    for env_var, param_name in required_params.items():
         try:
-            secret = client.get_secret(secret_name)
-            config[param_name] = secret.value
+            secret = client.get_secret(env_var)
+            value = secret.value
+            if not value:
+                missing_params.append(env_var)
+            config[param_name] = value
         except Exception as e:
-            logger.error(f"Error fetching secret {secret_name}: {e}")
-            missing_params.append(secret_name)
+            logger.error(f"Failed to retrieve secret {env_var}: {e}")
+            missing_params.append(env_var)
 
     if missing_params:
         raise ValueError(f"Missing required database parameters: {', '.join(missing_params)}")
