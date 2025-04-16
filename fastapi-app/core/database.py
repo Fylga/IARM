@@ -2,9 +2,16 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 import os
 import logging
+from azure.keyvault.secrets import SecretClient
+from azure.identity import DefaultAzureCredential
 
 logger = logging.getLogger(__name__)
 config = {}
+
+keyVaultName = os.environ.get("KEY_VAULT_NAME")
+KVUri = f"https://{keyVaultName}.vault.azure.net"
+credential = DefaultAzureCredential()
+client = SecretClient(vault_url=KVUri, credential=credential)
 
 # Attempting to retrieve Azure environment variables
 def get_db_config() -> dict[str, str]:
@@ -13,24 +20,24 @@ def get_db_config() -> dict[str, str]:
     required_params = {
         "DBHOST": "host",
         "DBUSER": "user",
-        "DBPASS": "password"
+        "DBPASS": "password",
+        "DBNAME": "database",
+        "DBPORT": "port"
     }
 
+    config = {}
     missing_params = []
 
-    for env_var, param_name in required_params.items():
-        value = os.environ.get(env_var)
-        if not value:
-            missing_params.append(env_var)
-        config[param_name] = value
+    for secret_name, param_name in required_params.items():
+        try:
+            secret = client.get_secret(secret_name)
+            config[param_name] = secret.value
+        except Exception as e:
+            logger.error(f"Error fetching secret {secret_name}: {e}")
+            missing_params.append(secret_name)
 
     if missing_params:
-        error_msg = f"Missing required database parameters: {', '.join(missing_params)}"
-        logger.error(error_msg)
-        raise ValueError(error_msg)
-    
-    config["database"] = os.environ.get("DBNAME", "postgres")
-    config["port"] = os.environ.get("DBPORT", 5432)
+        raise ValueError(f"Missing required database parameters: {', '.join(missing_params)}")
 
     return config
 

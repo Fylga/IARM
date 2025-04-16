@@ -10,10 +10,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from models.users import User
 from core.database import get_db
+from azure.keyvault.secrets import SecretClient
+from azure.identity import DefaultAzureCredential
 
+keyVaultName = os.environ.get("KEY_VAULT_NAME")
+KVUri = f"https://{keyVaultName}.vault.azure.net"
+credential = DefaultAzureCredential()
+client = SecretClient(vault_url=KVUri, credential=credential)
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
-ALGORITHM = os.environ.get("ALGORITHM")
+SECRET_KEY = client.get_secret("SECRET-KEY").value
+ALGORITHM = client.get_secret("ALGORITHM").value
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
