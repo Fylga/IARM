@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu } from "electron";
+import { app, BrowserWindow, globalShortcut, Menu } from "electron";
 import { ipcMainHandle, ipcMainOn, isDev } from "./util.js";
 import { getStaticData, pollResources } from "./ressourceManager.js";
 import { getAssetPath, getPreloadPath, getUIPath } from "./pathResolver.js";
@@ -8,8 +8,12 @@ import { createMenu } from "./menu.js";
 
 app.on("ready", () => {
 	const mainWindow = new BrowserWindow({
+		width: 1920,
+		height: 1080, 
 		webPreferences: {
 			preload: getPreloadPath(),
+			nodeIntegration: true,
+			contextIsolation: false,
 		},
 		icon: path.join(getAssetPath(), "icon.ico"),
 		// Réactive les bordures classiques avec les boutons de fenêtre
@@ -27,25 +31,15 @@ app.on("ready", () => {
 		return getStaticData();
 	});
 
-	// Retirer la gestion personnalisée des boutons
-	// La fenêtre va maintenant utiliser les boutons par défaut sans besoin de cette gestion
-	// ipcMainOn("sendFrameAction", (payload) => {
-	// 	switch (payload) {
-	// 		case "CLOSE":
-	// 			mainWindow.close();
-	// 			break;
-	// 		case "MAXIMIZE":
-	// 			mainWindow.maximize();
-	// 			break;
-	// 		case "MINIMIZE":
-	// 			mainWindow.minimize();
-	// 			break;
-	// 	}
-	// });
-
 	createTray(mainWindow);
 	handleCloseEvents(mainWindow);
 	createMenu(mainWindow);
+
+	globalShortcut.register("CommandOrControl+Shift+I", () => {
+		if (isDev()) {
+			mainWindow.webContents.openDevTools({ mode: "detach" });
+		}
+	}	);
 });
 
 function handleCloseEvents(mainWindow: BrowserWindow) {
