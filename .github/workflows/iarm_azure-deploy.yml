@@ -70,13 +70,19 @@ jobs:
         run: unzip fastapi-app.zip
 
       
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E1155298B936432BB96AB77966B3A58C }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_1DF2DDC88F7D481F974A29B0A4ABD5FD }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_FD2BF01332D749ED80A41DD37C049CDA }}
+
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
           app-name: 'iarm-backend-api'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F1CDCBE8F1B74160BF1F8F1AD7FEAE8B }}
 
   build_windows_electron-app:
     runs-on: windows-latest
