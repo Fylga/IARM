@@ -1,5 +1,5 @@
 {
-    "azureFunctions.deploySubpath": "iarm-fn-app",
+    "azureFunctions.deploySubpath": ".",
     "azureFunctions.scmDoBuildDuringDeployment": true,
     "azureFunctions.projectLanguage": "Python",
     "azureFunctions.projectRuntime": "~4",

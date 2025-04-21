@@ -9,3 +9,4 @@ COPY requirements.txt /
 RUN pip install -r /requirements.txt
 
 COPY . /home/site/wwwroot
+COPY .env /home/site/wwwroot/.env

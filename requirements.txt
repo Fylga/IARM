@@ -6,3 +6,7 @@ azure-functions
 azure-storage-blob
 azure-cognitiveservices-speech
 openai
+python-dotenv
+pytz
+azure-identity
+azure-keyvault-secrets
