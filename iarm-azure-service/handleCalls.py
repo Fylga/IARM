@@ -2,14 +2,13 @@ import os
 import tempfile
 import logging
 import azure.functions as func
-from azure.storage.blob import BlobServiceClient
-import wave
-from dotenv import load_dotenv
+from azure.storage.blob import BlobServiceClient, ContainerClient
 import azure.cognitiveservices.speech as speechsdk
 from openai import AzureOpenAI
 from azure.keyvault.secrets import SecretClient
 from azure.identity import DefaultAzureCredential
 
+# Load environment variables
 keyVaultName = os.environ.get("KEY_VAULT_NAME")
 KVUri = f"https://{keyVaultName}.vault.azure.net"
 credential = DefaultAzureCredential()
@@ -21,6 +20,8 @@ openai_key = os.environ.get("AZURE-OPENAI-KEY")
 endpoint = os.environ.get("AZURE-OPENAI-ENDPOINT")
 model_key = os.environ.get("AZURE-MODEL")
 version = os.environ.get("AZURE-OPENAI-VERSION")
+
+app = func.FunctionApp()
 
 def transcribe_audio(file_path: str) -> str:
     speech_config = speechsdk.SpeechConfig(
@@ -34,10 +35,13 @@ def transcribe_audio(file_path: str) -> str:
         audio_config=audio_config
     )
 
+    logging.info("Transcribing audio...")
     result = recognizer.recognize_once()
     if result.reason == speechsdk.ResultReason.RecognizedSpeech:
+        logging.info("Transcription successful.")
         return result.text
     else:
+        logging.warning(f"Transcription failed: {result.reason}")
         return ""
 
 def summarize(transcript: str) -> str:
@@ -52,15 +56,20 @@ def summarize(transcript: str) -> str:
         Transcription : {transcript}
         """
 
-    response = client.chat.completions.create(
-        model=model_key,
-        messages=[
-            {"role": "system", "content": "Vous êtes un assistant médical spécialisé dans les urgences médicales en France."},
-            {"role": "user", "content": prompt}
-        ],
-    )
-
-    return response.choices[0].message.content.strip()
+    logging.info("Summarizing transcript...")
+    try:
+        response = client.chat.completions.create(
+            model=model_key,
+            messages=[
+                {"role": "system", "content": "Vous êtes un assistant médical spécialisé dans les urgences médicales en France."},
+                {"role": "user", "content": prompt}
+            ],
+        )
+        logging.info("Summarization successful.")
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        logging.error(f"Summarization failed: {e}")
+        return ""
 
 @app.blob_trigger(arg_name="myblob", path="audio-calls/{name}", connection="AzureWebJobsStorage")
 def handleCalls(myblob: func.InputStream):
@@ -80,7 +89,15 @@ def handleCalls(myblob: func.InputStream):
 
             # Store back in Blob
             blob_service_client = BlobServiceClient.from_connection_string(os.environ["AzureWebJobsStorage"])
-            out_blob = blob_service_client.get_blob_client(container="structured-data", blob=myblob.name.replace(".mp3", ".json"))
+            container_client = blob_service_client.get_container_client("structured-data")
+
+            # Create container if it doesn't exist
+            try:
+                container_client.create_container()
+            except Exception as e:
+                logging.info("Container already exists or failed to create.")
+
+            out_blob = container_client.get_blob_client(blob=myblob.name.replace(".mp3", ".json"))
             out_blob.upload_blob(structured_data, overwrite=True)
         else:
             logging.warning("No speech recognized.")
