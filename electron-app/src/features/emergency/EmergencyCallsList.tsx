@@ -327,8 +327,7 @@ const EmergencyCallsList: React.FC = () => {
         </Button>
       </div>
 
-      {/* Liste des appels */}
-      <div className="flex-1 p-4 w-full overflow-auto">
+      <div className="flex-1 p-4 w-full overflow-auto scrollbar scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
         {sortedCalls.length === 0 ? (
           <Card className="w-full">
             <CardContent className="p-6 text-center text-gray-500">
