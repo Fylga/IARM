@@ -16,8 +16,7 @@ app.on("ready", () => {
 			contextIsolation: false,
 		},
 		icon: path.join(getAssetPath(), "icon.ico"),
-		// Réactive les bordures classiques avec les boutons de fenêtre
-		frame: true, // Remplace `false` par `true`
+		frame: true,
 	});
 	if (isDev()) {
 		mainWindow.loadURL("http://localhost:5123");

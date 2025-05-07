@@ -16,23 +16,16 @@ function App() {
         <Router>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
-            {/* <Route path="/register" element={<RegisterPage />} /> */}
-            
-            {/* Routes protégées */}
             <Route element={<ProtectedRoute />}>
               <Route element={<MainLayout />}>
                 <Route path="/" element={<EmergencyCallsList />} />
               </Route>
             </Route>
-            
-            {/* Routes admin */}
             <Route element={<ProtectedRoute requireAdmin={true} />}>
               <Route element={<MainLayout />}>
                 <Route path="/admin/users" element={<UsersList />} />
               </Route>
             </Route>
-
-            {/* Route par défaut - redirection vers la page d'accueil */}
             <Route path="*" element={<LoginPage />} />
           </Routes>
         </Router>

@@ -244,8 +244,6 @@ const CallPill: React.FC<{
 
 const EmergencyCallsList: React.FC = () => {
   const { calls, loading, error, answerCall, refreshCalls } = useEmergency();
-
-  // Bouton debug pour ajouter un nouvel appel de test
   const addDebugCall = () => {
     refreshCalls();
   };
@@ -288,7 +286,7 @@ const EmergencyCallsList: React.FC = () => {
       </div>
       
       <div className="w-full p-4 bg-gray-100 border-t border-gray-200 flex justify-between items-center">
-        <span className="text-sm text-gray-500">Mode Debug</span>
+        <span className="text-sm text-gray-500"></span>
         <Button 
           onClick={addDebugCall}
           variant="outline"

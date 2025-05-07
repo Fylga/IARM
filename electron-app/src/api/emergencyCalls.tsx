@@ -3,7 +3,6 @@ import { EmergencyCall } from '../types/emergency';
 
 import { API_URL } from './config';
 
-// Cette fonction est un exemple - vous devrez l'adapter à votre API réelle
 export const getEmergencyCalls = async (token: string) => {
   try {
     const response = await axios.get(`${API_URL}/emergency-calls`, {
@@ -40,7 +39,6 @@ export const answerCall = async (token: string, callId: string) => {
   }
 };
 
-// Simulation sans api
 export const getEmergencyCallsMock = (): EmergencyCall[] => {
   return [
     {

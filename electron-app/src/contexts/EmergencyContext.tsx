@@ -23,10 +23,6 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setLoading(true);
     setError(null);
     try {
-      // Dans un environnement réel, utilisez l'API
-      // const data = await getEmergencyCalls(token!);
-      
-      // Pour le moment, utilisons les données simulées
       const data = getEmergencyCallsMock();
       setCalls(data);
     } catch (err) {
@@ -40,10 +36,7 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   useEffect(() => {
     if (token) {
       fetchCalls();
-      
-      // Simulation de nouveaux appels toutes les 30 secondes
       const interval = setInterval(() => {
-        // Ajout d'un nouvel appel simulé
         const newCall: EmergencyCall = {
           id: `${1382330 + Math.floor(Math.random() * 1000)}`,
           intensity: Math.floor(Math.random() * 100),
@@ -62,10 +55,6 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const answerCall = async (id: string) => {
     try {
-      // Dans un environnement réel, utilisez l'API
-      // await answerCall(token!, id);
-      
-      // Pour le moment, supprimons simplement l'appel de la liste
       setCalls(prev => prev.filter(call => call.id !== id));
     } catch (err) {
       console.error(`Failed to answer call ${id}:`, err);
