@@ -44,7 +44,14 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           timestamp: Date.now(),
           severity: ['P0', 'P1', 'P2', 'P3'][Math.floor(Math.random() * 4)] as any,
           type: ['Accident', 'Chute', 'Malaise', 'Douleur'][Math.floor(Math.random() * 4)],
-          description: 'Nouvel appel d\'urgence simulé pour le développement'
+          description: 'Nouvel appel d\'urgence simulé pour le développement',
+          patientInfo: {
+            name: null,
+            age: null,
+            gender: null,
+            location: 'Adresse inconnue',
+            conversation: 'Appel simulé pour le développement'
+          }
         };
         setCalls(prev => [newCall, ...prev]);
       }, 30000);

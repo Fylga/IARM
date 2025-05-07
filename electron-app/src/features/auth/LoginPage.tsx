@@ -33,7 +33,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center">
+    <div className="fixed inset-0 flex items-center justify-center">
       <div className="w-full max-w-md px-4">
         <Card className="w-full shadow-lg">
           <CardHeader className="pb-2">

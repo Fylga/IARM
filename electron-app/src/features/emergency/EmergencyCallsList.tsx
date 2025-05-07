@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useEmergency } from "../../contexts/EmergencyContext";
+import { EmergencyCall } from "../../types/emergency";
 import {
   Dialog,
   DialogContent,
@@ -26,17 +27,7 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 import { Separator } from "../../components/ui/separator";
-import { Phone, X, Clock, User, AlertTriangle } from "lucide-react";
-
-interface EmergencyCall {
-  intensity: number;
-  startTime: string;
-  id: string;
-  severity: "P0" | "P1" | "P2" | "P3";
-  type: string;
-  description: string;
-  timestamp: number; // Timestamp de création de l'appel
-}
+import { Phone, X, Clock, User, AlertTriangle, ArrowUpDown } from "lucide-react";
 
 // Fonction pour formater la durée
 const formatDuration = (seconds: number): string => {
@@ -181,6 +172,39 @@ const CallDetails: React.FC<{
             <span className="text-sm text-gray-500">Description complète</span>
             <p className="mt-2">{call.description}</p>
           </div>
+          <Separator />
+          <div>
+            <span className="text-sm text-gray-500">Informations du patient</span>
+            <div className="mt-2 space-y-2">
+              {call.patientInfo.name && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Nom:</span>
+                  <span>{call.patientInfo.name}</span>
+                </div>
+              )}
+              {call.patientInfo.age && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Âge:</span>
+                  <span>{call.patientInfo.age} ans</span>
+                </div>
+              )}
+              {call.patientInfo.gender && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Genre:</span>
+                  <span>{call.patientInfo.gender === 'M' ? 'Homme' : 'Femme'}</span>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <span className="text-gray-600">Localisation:</span>
+                <span>{call.patientInfo.location}</span>
+              </div>
+            </div>
+          </div>
+          <Separator />
+          <div>
+            <span className="text-sm text-gray-500">Conversation</span>
+            <p className="mt-2 italic text-gray-700">{call.patientInfo.conversation}</p>
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -244,6 +268,15 @@ const CallPill: React.FC<{
 
 const EmergencyCallsList: React.FC = () => {
   const { calls, loading, error, answerCall, refreshCalls } = useEmergency();
+  const [sortBySeverity, setSortBySeverity] = useState(false);
+
+  const sortedCalls = React.useMemo(() => {
+    if (!sortBySeverity) return calls;
+    
+    const severityOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
+    return [...calls].sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+  }, [calls, sortBySeverity]);
+
   const addDebugCall = () => {
     refreshCalls();
   };
@@ -264,9 +297,21 @@ const EmergencyCallsList: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Filter section */}
+      <div className="p-4 border-b border-gray-200">
+        <Button
+          variant={sortBySeverity ? "default" : "outline"}
+          onClick={() => setSortBySeverity(!sortBySeverity)}
+          className="flex items-center gap-2"
+        >
+          <ArrowUpDown className="h-4 w-4" />
+          {sortBySeverity ? "Tri par sévérité actif" : "Trier par sévérité"}
+        </Button>
+      </div>
+
       {/* Liste des appels */}
       <div className="flex-1 p-4 w-full overflow-auto">
-        {calls.length === 0 ? (
+        {sortedCalls.length === 0 ? (
           <Card className="w-full">
             <CardContent className="p-6 text-center text-gray-500">
               Aucun appel d'urgence en attente
@@ -274,7 +319,7 @@ const EmergencyCallsList: React.FC = () => {
           </Card>
         ) : (
           <div className="space-y-4 w-full">
-            {calls.map((call) => (
+            {sortedCalls.map((call) => (
               <CallPill 
                 key={call.id} 
                 call={call} 
@@ -285,7 +330,7 @@ const EmergencyCallsList: React.FC = () => {
         )}
       </div>
       
-      <div className="w-full p-4 bg-gray-100 border-t border-gray-200 flex justify-between items-center">
+      {/* <div className="w-full p-4 bg-gray-100 border-t border-gray-200 flex justify-between items-center">
         <span className="text-sm text-gray-500"></span>
         <Button 
           onClick={addDebugCall}
@@ -294,7 +339,7 @@ const EmergencyCallsList: React.FC = () => {
         >
           Ajouter un appel de test
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 };
