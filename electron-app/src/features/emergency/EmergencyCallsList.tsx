@@ -271,20 +271,26 @@ const CallPill: React.FC<{
   );
 };
 
+type SortOption = 'none' | 'severity' | 'time';
+
 const EmergencyCallsList: React.FC = () => {
   const { calls, loading, error, answerCall, refreshCalls } = useEmergency();
-  const [sortBySeverity, setSortBySeverity] = useState(false);
+  const [sortOption, setSortOption] = useState<SortOption>('none');
 
   const sortedCalls = React.useMemo(() => {
-    if (!sortBySeverity) return calls;
+    if (sortOption === 'none') return calls;
     
-    const severityOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
-    return [...calls].sort((a, b) => severityOrder[a.urgence] - severityOrder[b.urgence]);
-  }, [calls, sortBySeverity]);
+    if (sortOption === 'severity') {
+      const severityOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
+      return [...calls].sort((a, b) => severityOrder[a.urgence] - severityOrder[b.urgence]);
+    }
+    
+    if (sortOption === 'time') {
+      return [...calls].sort((a, b) => a.timestamp - b.timestamp);
+    }
 
-  const addDebugCall = () => {
-    refreshCalls();
-  };
+    return calls;
+  }, [calls, sortOption]);
 
   if (loading) {
     return <div className="p-4">Chargement des appels d'urgence...</div>;
@@ -302,20 +308,27 @@ const EmergencyCallsList: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Filter section */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200 flex gap-2">
         <Button
-          variant={sortBySeverity ? "default" : "outline"}
-          onClick={() => setSortBySeverity(!sortBySeverity)}
+          variant={sortOption === 'severity' ? "default" : "outline"}
+          onClick={() => setSortOption(sortOption === 'severity' ? 'none' : 'severity')}
           className="flex items-center gap-2"
         >
           <ArrowUpDown className="h-4 w-4" />
-          {sortBySeverity ? "Tri par sévérité actif" : "Trier par sévérité"}
+          {sortOption === 'severity' ? "Tri par sévérité actif" : "Trier par sévérité"}
+        </Button>
+        <Button
+          variant={sortOption === 'time' ? "default" : "outline"}
+          onClick={() => setSortOption(sortOption === 'time' ? 'none' : 'time')}
+          className="flex items-center gap-2"
+        >
+          <Clock className="h-4 w-4" />
+          {sortOption === 'time' ? "Tri par temps actif" : "Trier par temps"}
         </Button>
       </div>
 
       {/* Liste des appels */}
-      <div className="flex-1 p-4 w-full overflow-auto scrollbar-thin scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 scrollbar-track-transparent">
+      <div className="flex-1 p-4 w-full overflow-auto">
         {sortedCalls.length === 0 ? (
           <Card className="w-full">
             <CardContent className="p-6 text-center text-gray-500">
@@ -323,7 +336,7 @@ const EmergencyCallsList: React.FC = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 w-full">
             {sortedCalls.map((call) => (
               <CallPill 
                 key={call.id} 
@@ -334,17 +347,6 @@ const EmergencyCallsList: React.FC = () => {
           </div>
         )}
       </div>
-      
-      {/* <div className="w-full p-4 bg-gray-100 border-t border-gray-200 flex justify-between items-center">
-        <span className="text-sm text-gray-500"></span>
-        <Button 
-          onClick={addDebugCall}
-          variant="outline"
-          className="bg-white"
-        >
-          Ajouter un appel de test
-        </Button>
-      </div> */}
     </div>
   );
 };
