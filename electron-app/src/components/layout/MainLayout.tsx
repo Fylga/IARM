@@ -13,8 +13,8 @@ const MainLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex fixed flex-col h-screen w-screen overflow-hidden">
-      <header className="w-full bg-white border-b border-gray-200 shadow-sm py-4">
+    <div className="h-screen w-screen">
+      <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 shadow-sm py-4 z-10">
         <div className="w-full px-6 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <h1 className="text-xl font-semibold">IARM Emergency System</h1>
@@ -33,7 +33,7 @@ const MainLayout: React.FC = () => {
           </div>
         </div>
       </header>
-      <div className="flex flex-1 w-full">
+      <div className="pt-16 flex h-full overflow-auto">
         <aside className="w-64 bg-gray-50 border-r border-gray-200 flex-shrink-0">
           <nav className="p-4 space-y-2">
             <div 
@@ -53,7 +53,7 @@ const MainLayout: React.FC = () => {
             )}
           </nav>
         </aside>
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-hidden">
           <Outlet />
         </main>
       </div>

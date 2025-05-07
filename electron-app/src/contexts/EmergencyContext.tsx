@@ -39,19 +39,18 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       const interval = setInterval(() => {
         const newCall: EmergencyCall = {
           id: `${1382330 + Math.floor(Math.random() * 1000)}`,
-          intensity: Math.floor(Math.random() * 100),
-          startTime: new Date().toLocaleTimeString(),
-          timestamp: Date.now(),
-          severity: ['P0', 'P1', 'P2', 'P3'][Math.floor(Math.random() * 4)] as any,
-          type: ['Accident', 'Chute', 'Malaise', 'Douleur'][Math.floor(Math.random() * 4)],
+          nom: 'non précisé',
+          âge: 'non précisé',
+          sexe: 'non précisé',
           description: 'Nouvel appel d\'urgence simulé pour le développement',
-          patientInfo: {
-            name: null,
-            age: null,
-            gender: null,
-            location: 'Adresse inconnue',
-            conversation: 'Appel simulé pour le développement'
-          }
+          localisation: 'Adresse inconnue',
+          heure_appel: new Date().toISOString(),
+          urgence: ['P0', 'P1', 'P2', 'P3'][Math.floor(Math.random() * 4)] as any,
+          niveau_soins: ['R1', 'R2', 'R3', 'R4'][Math.floor(Math.random() * 4)] as any,
+          bilan: ['B0', 'B1', 'B2'][Math.floor(Math.random() * 3)] as any,
+          transcription: 'Appel simulé pour le développement',
+          intensity: Math.floor(Math.random() * 100),
+          timestamp: Date.now()
         };
         setCalls(prev => [newCall, ...prev]);
       }, 30000);
