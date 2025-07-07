@@ -99,7 +99,7 @@ jobs:
       - name: Build Electron App for Windows
         run: |
           cd electron-app
-          npm run build:win
+          npm run dist:win
 
       - name: Upload Windows Installer
         uses: actions/upload-artifact@v4
