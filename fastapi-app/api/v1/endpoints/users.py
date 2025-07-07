@@ -50,11 +50,6 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
             status_code=400,
             detail="Invalid credentials"
         )
-
-    user_in_db.is_active = True
-    db.add(user_in_db)
-    await db.commit()
-    await db.refresh(user_in_db)
     access_token = create_access_token(data={"sub": user_in_db.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -62,11 +57,33 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
 async def logout(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
-):
+    ):
     current_user.is_active = False
     await db.commit()
     await db.refresh(current_user)
-    return {"message": "Déconnexion réussie"}
+    return {"message": "Logout sucessful"}
+
+@router.patch("/ready_to_work")
+async def ready_to_work(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+    ):
+    current_user.is_active = True
+    db.add(current_user)
+    await db.commit()
+    await db.refresh(current_user)
+    return {"message" : "Ready to work"}
+
+@router.patch("/pause")
+async def pause(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+    ):
+    current_user.is_active = False
+    await db.commit()
+    await db.refresh(current_user)
+    return {"message" : "pause from work"}
+
 
 @router.post("/users/", status_code=201, response_model=UserCreated)
 async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):

@@ -5,9 +5,6 @@ import logging
 from azure.keyvault.secrets import SecretClient
 from azure.identity import DefaultAzureCredential
 
-logger = logging.getLogger(__name__)
-config = {}
-
 keyVaultName = os.environ.get("KEY_VAULT_NAME")
 KVUri = f"https://{keyVaultName}.vault.azure.net"
 credential = DefaultAzureCredential()
@@ -56,3 +53,4 @@ SessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=F
 async def get_db():
     async with SessionLocal() as session:
         yield session
+
