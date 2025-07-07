@@ -56,12 +56,6 @@ jobs:
   deploy_backend:
     runs-on: ubuntu-latest
     needs: build_backend
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
     
     steps:
       - name: Download artifact from build job
@@ -72,20 +66,13 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip fastapi-app.zip
 
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E1155298B936432BB96AB77966B3A58C }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_1DF2DDC88F7D481F974A29B0A4ABD5FD }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_FD2BF01332D749ED80A41DD37C049CDA }}
-
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
           app-name: 'iarm-fastapi'
           slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_595C3906E1DF43B4B664BE2779CF54A4 }}
 
   build_windows_electron-app:
     runs-on: windows-latest
