@@ -44,6 +44,8 @@ def get_db_config() -> dict[str, str]:
 
     return config
 
+db_url = None
+
 try:
     db_config = get_db_config()
     db_url = f"postgresql+asyncpg://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}"
